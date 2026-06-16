@@ -89,16 +89,17 @@ CREATE TABLE Biblioteca (
 );
 
 CREATE TABLE Armazena(
-	id_biblioteca INT,
+    id_biblioteca INT,
     id_produto INT,
     PRIMARY KEY (id_biblioteca, id_produto), 
-    tempo_jogado TIME DEFAULT '00:00:00',
+    tempo_jogado INTERVAL DEFAULT '00:00:00',
     ultima_sessao TIMESTAMP,         
     data_aqs DATE,
     status_progresso VARCHAR(100),
     FOREIGN KEY (id_biblioteca) REFERENCES Biblioteca(id_biblioteca) ON DELETE CASCADE,
     FOREIGN KEY (id_produto) REFERENCES Produto(id_produto)
 );
+
 CREATE TABLE Pedidos(
 	id_pedido SERIAL PRIMARY KEY,
 	data_compra DATE NOT NULL,
