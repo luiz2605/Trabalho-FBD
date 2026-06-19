@@ -115,7 +115,7 @@ CREATE TABLE itens_pedidos(
     quantidade INT NOT NULL DEFAULT 1,
     preco_momento DECIMAL(10,2) NOT NULL,
     preco_original DECIMAL(10,2) NOT NULL,
-    status_pedido VARCHAR(20),
+    status_pedido VARCHAR(50),
     PRIMARY KEY (id_pedido, id_produto),
     FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido) ON DELETE CASCADE,
     FOREIGN KEY (id_produto) REFERENCES Produto(id_produto)
