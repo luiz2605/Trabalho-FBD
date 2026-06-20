@@ -1970,3 +1970,238 @@ INSERT INTO promocao (id_promocao, id_produto, data_fim, data_inicio, percentual
 (128, 135, '2024-07-05', '2024-06-20', 15.00),
 (129, 136, '2024-06-18', '2024-06-01', 45.00), 
 (130, 137, '2024-07-01', '2024-06-15', 70.00);
+
+--------------------------------------------------------------------------------------------------
+-- INSERTIONS EXTRAS PARA CONSULTAS
+--------------------------------------------------------------------------------------------------
+-- Adicionando a "Estúdio Lenda" para a consulta de Fãs Hardcore (ID 131)
+INSERT INTO Desenvolvedora (id_desenvolvedora, comissao_plat, razao_social, cnpj) VALUES
+(131, '10%', 'Estúdio Lenda', '99.888.777/0001-99');
+
+-- Inserindo os Jogos Novos (IDs 261 a 265)
+INSERT INTO Produto (id_produto, id_desenvolvedora, data_lancamento, Nome, tags, descricao, tipo_produto, preco_base, status) VALUES
+(261, 131, '2024-01-01', 'O Rei das Conquistas', 'RPG', 'Jogo focado em platina', 'Jogo', 200.00, 'Ativo'),
+(262, 131, '2024-03-01', 'Hype Extremo', 'Ação', 'Focado na consulta de lançamento', 'Jogo', 150.00, 'Ativo'),
+(263, 131, '2024-02-15', 'Trollagem Promocional', 'Estratégia', 'Focado na consulta de azarados', 'Jogo', 200.00, 'Ativo'),
+(264, 131, '2023-11-20', 'Jogo Íntegro', 'Indie', 'Não possui nenhuma DLC', 'Jogo', 50.00, 'Ativo'),
+(265, 1, '2023-01-10', 'Simulador de Carteira', 'Simulador', 'Possui múltiplas DLCs', 'Jogo', 100.00, 'Ativo');
+
+INSERT INTO Jogo (id_produto, classificacao_indicativa, engine, has_multiplayer, requisitos_sistema) VALUES
+(261, 12, 'Unreal Engine 5', false, NULL),
+(262, 16, 'Custom Engine', true, NULL),
+(263, 10, 'Unity', false, NULL),
+(264, 10, '2D Custom', false, NULL),
+(265, 0, 'SimEngine', true, NULL);
+
+-- Inserindo 5 DLCs para o Jogo 265 (IDs 271 a 275)
+INSERT INTO Produto (id_produto, id_desenvolvedora, data_lancamento, Nome, tags, descricao, tipo_produto, preco_base, status) VALUES
+(271, 1, '2023-02-10', 'DLC Cosmética 1', NULL, NULL, 'DLC', 20.00, 'Ativo'),
+(272, 1, '2023-03-10', 'DLC Cosmética 2', NULL, NULL, 'DLC', 20.00, 'Ativo'),
+(273, 1, '2023-04-10', 'DLC Cosmética 3', NULL, NULL, 'DLC', 20.00, 'Ativo'),
+(274, 1, '2023-05-10', 'Expansão de Mapa 1', NULL, NULL, 'DLC', 40.00, 'Ativo'),
+(275, 1, '2023-06-10', 'Expansão de História', NULL, NULL, 'DLC', 50.00, 'Ativo');
+
+INSERT INTO Dlc (id_produto, tipo_conteudo, id_jogo_pai) VALUES
+(271, 'Cosmético', 265),
+(272, 'Cosmético', 265),
+(273, 'Cosmético', 265),
+(274, 'Mapa', 265),
+(275, 'História', 265);
+
+-- Inserindo 10 Conquistas para o Jogo 261
+INSERT INTO Conquista (id_jogo, id_conquista, titulo, descricao) VALUES
+(261, 1, 'Iniciante', 'Comece o jogo'),
+(261, 2, 'Primeiro Chefe', 'Derrote o boss 1'),
+(261, 3, 'Segundo Chefe', 'Derrote o boss 2'),
+(261, 4, 'Colecionador', 'Pegue 10 itens'),
+(261, 5, 'Rico', 'Junte 1000 moedas'),
+(261, 6, 'Mestre das Armas', 'Compre todas as armas'),
+(261, 7, 'Explorador', 'Abra todo o mapa'),
+(261, 8, 'Invencível', 'Termine sem morrer'),
+(261, 9, 'Final Bom', 'Veja o final verdadeiro'),
+(261, 10, 'Platina Divina', 'Desbloqueie todas as outras conquistas');
+
+-- Novos Usuários (IDs 131 a 148)
+INSERT INTO Usuario (id_user, nome, senha, data_nascimento, email, nickname) VALUES
+(131, 'Fã Hardcore', 'senha123', '1990-01-01', 'fan131@email.com', 'fan_absoluto'),
+(132, 'Mestre da Platina', 'senha123', '1992-02-02', 'plat132@email.com', 'platinador_pro'),
+(133, 'João do Hype', 'senha123', '1995-05-05', 'hype133@email.com', 'hype_boy1'),
+(134, 'Maria Day One', 'senha123', '1996-06-06', 'hype134@email.com', 'day_one_maria'),
+(135, 'Carlos Atrasado', 'senha123', '1994-04-04', 'late135@email.com', 'carlos_long_tail'),
+(136, 'Zeca Azarado', 'senha123', '1998-08-08', 'azar136@email.com', 'zeca_sem_sorte'),
+(137, 'Bruce Wayne', 'senha123', '1980-10-10', 'baleia137@email.com', 'baleia_alfa'),
+(138, 'Tony Stark', 'senha123', '1982-11-11', 'baleia138@email.com', 'baleia_beta'),
+(139, 'Tio Patinhas', 'senha123', '1950-12-12', 'baleia139@email.com', 'baleia_gama'),
+(140, 'Elon Musk', 'senha123', '1971-01-20', 'baleia140@email.com', 'baleia_delta'),
+(141, 'Jeff Bezos', 'senha123', '1964-02-21', 'baleia141@email.com', 'baleia_eco'),
+(142, 'Julius Mão de Vaca', 'senha123', '1985-03-30', 'cacador142@email.com', 'cacador_oferta1'),
+(143, 'Senhor Desconto', 'senha123', '1990-04-15', 'cacador143@email.com', 'cacador_oferta2'),
+(144, 'Rainha do Cupom', 'senha123', '1993-05-18', 'cacador144@email.com', 'cacador_oferta3'),
+(145, 'Caio Muquirana', 'senha123', '1995-06-25', 'cacador145@email.com', 'cacador_oferta4'),
+(146, 'Bia Pechincha', 'senha123', '1998-07-28', 'cacador146@email.com', 'cacador_oferta5'),
+(147, 'Pedro Black Friday', 'senha123', '2000-08-14', 'cacador147@email.com', 'cacador_oferta6'),
+(148, 'Ana Saldão', 'senha123', '2001-09-09', 'cacador148@email.com', 'cacador_oferta7');
+
+-- Criação de Bibliotecas para os novos usuários
+INSERT INTO Biblioteca (id_biblioteca, qntd_jogos, data_atualizacao, id_user) VALUES
+(131, 4, CURRENT_DATE, 131), (132, 1, CURRENT_DATE, 132), (133, 1, CURRENT_DATE, 133), 
+(134, 1, CURRENT_DATE, 134), (135, 1, CURRENT_DATE, 135), (136, 1, CURRENT_DATE, 136), 
+(137, 2, CURRENT_DATE, 137), (138, 2, CURRENT_DATE, 138), (139, 2, CURRENT_DATE, 139), 
+(140, 2, CURRENT_DATE, 140), (141, 2, CURRENT_DATE, 141), (142, 7, CURRENT_DATE, 142), 
+(143, 7, CURRENT_DATE, 143), (144, 7, CURRENT_DATE, 144), (145, 7, CURRENT_DATE, 145), 
+(146, 7, CURRENT_DATE, 146), (147, 7, CURRENT_DATE, 147), (148, 7, CURRENT_DATE, 148);
+
+-- Promoções Inéditas para as Consultas
+INSERT INTO promocao (id_promocao, id_produto, data_fim, data_inicio, percentual_desconto) VALUES
+-- Promoção para gerar os "Azarados" (Jogo 263)
+(131, 263, '2024-05-20', '2024-05-10', 50.00),
+-- Lote de Promoções simultâneas para os 7 "Caçadores de Promoção" (Jogos 22 a 28, todas ativas em Abril)
+(132, 22, '2024-04-30', '2024-04-01', 50.00),
+(133, 23, '2024-04-30', '2024-04-01', 50.00),
+(134, 24, '2024-04-30', '2024-04-01', 50.00),
+(135, 25, '2024-04-30', '2024-04-01', 50.00),
+(136, 26, '2024-04-30', '2024-04-01', 50.00),
+(137, 27, '2024-04-30', '2024-04-01', 50.00),
+(138, 28, '2024-04-30', '2024-04-01', 50.00);
+
+-- ---------------------------------------------------------
+-- CÓDIGO DE TESTE 1: FÃ HARDCORE (Usuário 131 compra e armazena os 4 jogos da Dev 131)
+-- ---------------------------------------------------------
+INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES (145, '2024-03-10', true, 600.00, 131);
+INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES
+(145, 261, 1, 200.00, 200.00, 'Entregue'), (145, 262, 1, 150.00, 150.00, 'Entregue'),
+(145, 263, 1, 200.00, 200.00, 'Entregue'), (145, 264, 1, 50.00, 50.00, 'Entregue');
+INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, data_aqs) VALUES
+(131, 261, '10:00:00', '2024-03-10'), (131, 262, '10:00:00', '2024-03-10'),
+(131, 263, '10:00:00', '2024-03-10'), (131, 264, '10:00:00', '2024-03-10');
+
+-- ---------------------------------------------------------
+-- CÓDIGO DE TESTE 2: PLATINADOR (Usuário 132 compra Jogo 261 e desbloqueia 100%)
+-- ---------------------------------------------------------
+INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES (146, '2024-01-10', true, 200.00, 132);
+INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES (146, 261, 1, 200.00, 200.00, 'Entregue');
+INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, data_aqs) VALUES (132, 261, '85:30:00', '2024-01-10');
+INSERT INTO Desbloqueia (id_user, id_jogo, id_conquista) VALUES
+(132, 261, 1), (132, 261, 2), (132, 261, 3), (132, 261, 4), (132, 261, 5),
+(132, 261, 6), (132, 261, 7), (132, 261, 8), (132, 261, 9), (132, 261, 10);
+
+-- ---------------------------------------------------------
+-- CÓDIGO DE TESTE 3: HYPE LANÇAMENTO (Usuários 133 a 135 comprando Jogo 262)
+-- (Lançou 2024-03-01. Receita Launch = <= 7 dias. Receita Cauda Longa = > 7 dias)
+-- ---------------------------------------------------------
+INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES 
+(147, '2024-03-02', true, 150.00, 133), -- Venda de Lançamento (Day 2)
+(148, '2024-03-05', true, 150.00, 134), -- Venda de Lançamento (Day 5)
+(149, '2024-03-25', true, 150.00, 135); -- Venda de Cauda Longa (Day 25)
+INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES
+(147, 262, 1, 150.00, 150.00, 'Entregue'), (148, 262, 1, 150.00, 150.00, 'Entregue'), (149, 262, 1, 150.00, 150.00, 'Entregue');
+INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, data_aqs) VALUES 
+(133, 262, '20:00:00', '2024-03-02'), (134, 262, '15:00:00', '2024-03-05'), (135, 262, '10:00:00', '2024-03-25');
+
+-- ---------------------------------------------------------
+-- CÓDIGO DE TESTE 4: AZARADO (Usuário 136 compra pouco antes da Promo de 50%)
+-- (A promo do Jogo 263 começa 2024-05-10, ele compra preço cheio dia 08)
+-- ---------------------------------------------------------
+INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES (150, '2024-05-08', true, 200.00, 136);
+INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES (150, 263, 1, 200.00, 200.00, 'Entregue');
+INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, data_aqs) VALUES (136, 263, '02:00:00', '2024-05-08');
+
+-- ---------------------------------------------------------
+-- CÓDIGO DE TESTE 5: BALEIAS LOUCAS (Usuários 137 a 141 comprando volumes imensos)
+-- Eles vão comprar 50 cópias de Tekken 8 (id 15 - 299.00) para "dar de presente", gerando receita colossal
+-- ---------------------------------------------------------
+INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES 
+(151, '2024-01-30', true, 14950.00, 137), (152, '2024-01-30', true, 14950.00, 138),
+(153, '2024-01-30', true, 14950.00, 139), (154, '2024-01-30', true, 14950.00, 140),
+(155, '2024-01-30', true, 14950.00, 141);
+INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES
+(151, 15, 50, 299.00, 299.00, 'Entregue'), (152, 15, 50, 299.00, 299.00, 'Entregue'),
+(153, 15, 50, 299.00, 299.00, 'Entregue'), (154, 15, 50, 299.00, 299.00, 'Entregue'),
+(155, 15, 50, 299.00, 299.00, 'Entregue');
+INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, data_aqs) VALUES 
+(137, 15, '00:00:00', '2024-01-30'), (138, 15, '00:00:00', '2024-01-30'), 
+(139, 15, '00:00:00', '2024-01-30'), (140, 15, '00:00:00', '2024-01-30'), 
+(141, 15, '00:00:00', '2024-01-30');
+
+-- ---------------------------------------------------------
+-- CÓDIGO DE TESTE 6: CAÇADORES DE PROMOÇÃO (Usuários 142 a 148 comprando APENAS com desconto)
+-- Eles compram 7 jogos (IDs 22 ao 28) no dia '2024-04-15' (durante a validade das Promos 132-138 com 50% Off)
+-- ---------------------------------------------------------
+INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES 
+(156, '2024-04-15', true, 609.50, 142), (157, '2024-04-15', true, 609.50, 143),
+(158, '2024-04-15', true, 609.50, 144), (159, '2024-04-15', true, 609.50, 145),
+(160, '2024-04-15', true, 609.50, 146), (161, '2024-04-15', true, 609.50, 147),
+(162, '2024-04-15', true, 609.50, 148);
+
+-- Inserindo os itens com 50% de desconto para todos os 7 caçadores (609.50 = soma exata dos preços abaixo)
+INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES
+-- Pedido 156 (Caçador 1)
+(156, 22, 1, 124.50, 249.00, 'Entregue'), (156, 23, 1, 149.50, 299.00, 'Entregue'),
+(156, 24, 1, 99.50, 199.00, 'Entregue'),  (156, 25, 1, 169.50, 339.00, 'Entregue'),
+(156, 26, 1, 72.00, 144.00, 'Entregue'),  (156, 27, 1, 64.50, 129.00, 'Entregue'),
+(156, 28, 1, 19.95, 39.90, 'Entregue'),
+-- Pedido 157 (Caçador 2)
+(157, 22, 1, 124.50, 249.00, 'Entregue'), (157, 23, 1, 149.50, 299.00, 'Entregue'),
+(157, 24, 1, 99.50, 199.00, 'Entregue'),  (157, 25, 1, 169.50, 339.00, 'Entregue'),
+(157, 26, 1, 72.00, 144.00, 'Entregue'),  (157, 27, 1, 64.50, 129.00, 'Entregue'),
+(157, 28, 1, 19.95, 39.90, 'Entregue'),
+-- Pedido 158 (Caçador 3)
+(158, 22, 1, 124.50, 249.00, 'Entregue'), (158, 23, 1, 149.50, 299.00, 'Entregue'),
+(158, 24, 1, 99.50, 199.00, 'Entregue'),  (158, 25, 1, 169.50, 339.00, 'Entregue'),
+(158, 26, 1, 72.00, 144.00, 'Entregue'),  (158, 27, 1, 64.50, 129.00, 'Entregue'),
+(158, 28, 1, 19.95, 39.90, 'Entregue'),
+-- Pedido 159 (Caçador 4)
+(159, 22, 1, 124.50, 249.00, 'Entregue'), (159, 23, 1, 149.50, 299.00, 'Entregue'),
+(159, 24, 1, 99.50, 199.00, 'Entregue'),  (159, 25, 1, 169.50, 339.00, 'Entregue'),
+(159, 26, 1, 72.00, 144.00, 'Entregue'),  (159, 27, 1, 64.50, 129.00, 'Entregue'),
+(159, 28, 1, 19.95, 39.90, 'Entregue'),
+-- Pedido 160 (Caçador 5)
+(160, 22, 1, 124.50, 249.00, 'Entregue'), (160, 23, 1, 149.50, 299.00, 'Entregue'),
+(160, 24, 1, 99.50, 199.00, 'Entregue'),  (160, 25, 1, 169.50, 339.00, 'Entregue'),
+(160, 26, 1, 72.00, 144.00, 'Entregue'),  (160, 27, 1, 64.50, 129.00, 'Entregue'),
+(160, 28, 1, 19.95, 39.90, 'Entregue'),
+-- Pedido 161 (Caçador 6)
+(161, 22, 1, 124.50, 249.00, 'Entregue'), (161, 23, 1, 149.50, 299.00, 'Entregue'),
+(161, 24, 1, 99.50, 199.00, 'Entregue'),  (161, 25, 1, 169.50, 339.00, 'Entregue'),
+(161, 26, 1, 72.00, 144.00, 'Entregue'),  (161, 27, 1, 64.50, 129.00, 'Entregue'),
+(161, 28, 1, 19.95, 39.90, 'Entregue'),
+-- Pedido 162 (Caçador 7)
+(162, 22, 1, 124.50, 249.00, 'Entregue'), (162, 23, 1, 149.50, 299.00, 'Entregue'),
+(162, 24, 1, 99.50, 199.00, 'Entregue'),  (162, 25, 1, 169.50, 339.00, 'Entregue'),
+(162, 26, 1, 72.00, 144.00, 'Entregue'),  (162, 27, 1, 64.50, 129.00, 'Entregue'),
+(162, 28, 1, 19.95, 39.90, 'Entregue');
+
+-- Armazenando os jogos para caçadores 
+INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, data_aqs) VALUES 
+(142, 22, '10:00:00', '2024-04-15'), (142, 23, '10:00:00', '2024-04-15'), (142, 24, '10:00:00', '2024-04-15'), 
+(142, 25, '10:00:00', '2024-04-15'), (142, 26, '10:00:00', '2024-04-15'), (142, 27, '10:00:00', '2024-04-15'), 
+(142, 28, '10:00:00', '2024-04-15'),
+-- Armazenando os jogos para o segundo caçador (Biblioteca 143)
+(143, 22, '10:00:00', '2024-04-15'), (143, 23, '10:00:00', '2024-04-15'), (143, 24, '10:00:00', '2024-04-15'), 
+(143, 25, '10:00:00', '2024-04-15'), (143, 26, '10:00:00', '2024-04-15'), (143, 27, '10:00:00', '2024-04-15'), 
+(143, 28, '10:00:00', '2024-04-15'),
+
+-- Armazenando os jogos para o terceiro caçador (Biblioteca 144)
+(144, 22, '10:00:00', '2024-04-15'), (144, 23, '10:00:00', '2024-04-15'), (144, 24, '10:00:00', '2024-04-15'), 
+(144, 25, '10:00:00', '2024-04-15'), (144, 26, '10:00:00', '2024-04-15'), (144, 27, '10:00:00', '2024-04-15'), 
+(144, 28, '10:00:00', '2024-04-15'),
+
+-- Armazenando os jogos para o quarto caçador (Biblioteca 145)
+(145, 22, '10:00:00', '2024-04-15'), (145, 23, '10:00:00', '2024-04-15'), (145, 24, '10:00:00', '2024-04-15'), 
+(145, 25, '10:00:00', '2024-04-15'), (145, 26, '10:00:00', '2024-04-15'), (145, 27, '10:00:00', '2024-04-15'), 
+(145, 28, '10:00:00', '2024-04-15'),
+
+-- Armazenando os jogos para o quinto caçador (Biblioteca 146)
+(146, 22, '10:00:00', '2024-04-15'), (146, 23, '10:00:00', '2024-04-15'), (146, 24, '10:00:00', '2024-04-15'), 
+(146, 25, '10:00:00', '2024-04-15'), (146, 26, '10:00:00', '2024-04-15'), (146, 27, '10:00:00', '2024-04-15'), 
+(146, 28, '10:00:00', '2024-04-15'),
+
+-- Armazenando os jogos para o sexto caçador (Biblioteca 147)
+(147, 22, '10:00:00', '2024-04-15'), (147, 23, '10:00:00', '2024-04-15'), (147, 24, '10:00:00', '2024-04-15'), 
+(147, 25, '10:00:00', '2024-04-15'), (147, 26, '10:00:00', '2024-04-15'), (147, 27, '10:00:00', '2024-04-15'), 
+(147, 28, '10:00:00', '2024-04-15'),
+
+-- Armazenando os jogos para a sétima caçadora (Biblioteca 148)
+(148, 22, '10:00:00', '2024-04-15'), (148, 23, '10:00:00', '2024-04-15'), (148, 24, '10:00:00', '2024-04-15'), 
+(148, 25, '10:00:00', '2024-04-15'), (148, 26, '10:00:00', '2024-04-15'), (148, 27, '10:00:00', '2024-04-15'), 
+(148, 28, '10:00:00', '2024-04-15');
