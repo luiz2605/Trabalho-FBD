@@ -75,7 +75,7 @@ CREATE TABLE Desbloqueia(
 	id_user INT,
     id_jogo INT,
     id_conquista INT,
-	data_desbloqueio DATE IS NOT NULL,
+	data_desbloqueio DATE NOT NULL,
     PRIMARY KEY (id_user, id_jogo, id_conquista),
     FOREIGN KEY (id_user) REFERENCES Usuario(id_user) ON DELETE CASCADE,
     -- Como a PK de conquista é composta, a FK aqui também precisa ser dupla:
@@ -1157,7 +1157,7 @@ INSERT INTO Conquista (id_jogo, id_conquista, titulo, descricao) VALUES
 --------------------------------------------------------------------------------------------------
 -- 7. DESBLOQUEIA (130 registros -> liga Usuario, Jogo, Conquista)
 --------------------------------------------------------------------------------------------------
-INSERT INTO Desbloqueia (id_user, id_jogo, id_conquista, data_debloqueio) VALUES
+INSERT INTO Desbloqueia (id_user, id_jogo, id_conquista, data_desbloqueio) VALUES
 (1, 1, 1, '2024-08-10'), (2, 2, 2, '2024-08-11'), (3, 3, 3, '2024-08-12'), (4, 4, 4, '2024-08-15'), (5, 5, 5, '2024-08-18'), 
 (6, 6, 6, '2024-08-20'), (7, 7, 7, '2024-08-22'), (8, 8, 8, '2024-08-25'), (9, 9, 9, '2024-08-28'), (10, 10, 10, '2024-08-30'),
 (11, 11, 11, '2024-09-01'), (12, 12, 12, '2024-09-03'), (13, 13, 13, '2024-09-05'), (14, 14, 14, '2024-09-07'), (15, 15, 15, '2024-09-10'), 
@@ -1615,6 +1615,9 @@ INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, ultima_sessao, da
 (148, 27, '10:00:00', NULL, '2024-04-15', NULL), 
 (148, 28, '10:00:00', NULL, '2024-04-15', NULL),
 (132, 261, '85:30:00', NULL, '2024-01-10', NULL),
+(133, 262, '20:00:00',NULL, '2024-03-02',NULL), 
+(134, 262, '15:00:00',NULL, '2024-03-05',NULL), 
+(135, 262, '10:00:00',NULL, '2024-03-25',NULL),
 (136, 263, '02:00:00', NULL, '2024-05-08', NULL),
 (137, 15, '00:00:00', NULL, '2024-01-30', NULL), 
 (138, 15, '00:00:00', NULL, '2024-01-30', NULL), 
@@ -1934,11 +1937,8 @@ INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, pre
 (133, 6, 1, 129.99, 129.99, 'Entregue'), 
 (133, 132, 1, 39.99, 39.99, 'Entregue'),
 (133, 133, 1, 79.99, 79.99, 'Entregue'),
-(133, 262, '20:00:00', '2024-03-02'), 
 (134, 13, 1, 249.00, 249.00, 'Entregue'),
-(134, 262, '15:00:00', '2024-03-05'), 
 (135, 21, 1, 0.00, 0.00, 'Entregue'), 
-(135, 262, '10:00:00', '2024-03-25'),
 (135, 145, 1, 159.00, 159.00, 'Entregue'), 
 (136, 15, 1, 299.00, 299.00, 'Aguardando Pagamento'),
 (136, 8, 1, 229.90, 229.90, 'Aguardando Pagamento'),
@@ -1970,12 +1970,12 @@ INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, pre
 (147, 262, 1, 150.00, 150.00, 'Entregue'), 
 (148, 262, 1, 150.00, 150.00, 'Entregue'), 
 (149, 262, 1, 150.00, 150.00, 'Entregue'),
-(150, 263, 1, 200.00, 200.00, 'Entregue')
+(150, 263, 1, 200.00, 200.00, 'Entregue'),
 (151, 15, 50, 299.00, 299.00, 'Entregue'), 
 (152, 15, 50, 299.00, 299.00, 'Entregue'),
 (153, 15, 50, 299.00, 299.00, 'Entregue'), 
 (154, 15, 50, 299.00, 299.00, 'Entregue'),
-(155, 15, 50, 299.00, 299.00, 'Entregue')
+(155, 15, 50, 299.00, 299.00, 'Entregue'),
 (156, 22, 1, 124.50, 249.00, 'Entregue'), 
 (156, 23, 1, 149.50, 299.00, 'Entregue'),
 (156, 24, 1, 99.50, 199.00, 'Entregue'),  
