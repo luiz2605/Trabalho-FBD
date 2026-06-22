@@ -74,6 +74,7 @@ CREATE TABLE Desbloqueia(
 	id_user INT,
     id_jogo INT,
     id_conquista INT,
+	data_debloqueio DATE NOT NULL,
     PRIMARY KEY (id_user, id_jogo, id_conquista),
     FOREIGN KEY (id_user) REFERENCES Usuario(id_user) ON DELETE CASCADE,
     -- Como a PK de conquista é composta, a FK aqui também precisa ser dupla:
