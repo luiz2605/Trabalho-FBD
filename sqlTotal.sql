@@ -146,7 +146,7 @@ CREATE TABLE promocao(
 --POVOAMENTO
 
 --------------------------------------------------------------------------------------------------
--- 1. USUARIO (130 registros)
+-- 1. USUARIO (148 registros)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Usuario (id_user, nome, senha, data_nascimento, email, nickname) VALUES
 (1, 'Gabriel Silva', 'senha123', '1995-03-12', 'gabriel1@email.com', 'gabs_silva'),
@@ -299,7 +299,7 @@ INSERT INTO Usuario (id_user, nome, senha, data_nascimento, email, nickname) VAL
 (148, 'Ana Saldão', 'senha123', '2001-09-09', 'cacador148@email.com', 'cacador_oferta7');
 
 --------------------------------------------------------------------------------------------------
--- 2. DESENVOLVEDORA (130 registros)
+-- 2. DESENVOLVEDORA (131 registros)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Desenvolvedora (id_desenvolvedora, comissao_plat, razao_social, cnpj) VALUES
 (1, '30%', 'Valve Corporation', '11.111.111/0001-01'),
@@ -435,7 +435,7 @@ INSERT INTO Desenvolvedora (id_desenvolvedora, comissao_plat, razao_social, cnpj
 (131, '10%', 'Estúdio Lenda', '99.888.777/0001-99');
 
 --------------------------------------------------------------------------------------------------
--- 3. PRODUTO (260 registros -> 1 a 130 serão Jogos, 131 a 260 serão DLCs)
+-- 3. PRODUTO (270 registros -> 1 a 130 serão Jogos, 131 a 270 serão DLCs)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Produto (id_produto, id_desenvolvedora, data_lancamento, Nome, tags, descricao, tipo_produto, preco_base, status) VALUES
 -- 1 a 130 (Jogos)
@@ -714,7 +714,7 @@ INSERT INTO Produto (id_produto, id_desenvolvedora, data_lancamento, Nome, tags,
 
 
 --------------------------------------------------------------------------------------------------
--- 4. JOGO (130 registros -> herdam id_produto de 1 a 130)
+-- 4. JOGO (135 registros -> herdam id_produto de 1 a 130)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Jogo (id_produto, classificacao_indicativa, engine, has_multiplayer, requisitos_sistema) VALUES
 (1, 16, 'Source 2', true, 'Intel Core i5, 8GB RAM, GTX 1060'),
@@ -854,7 +854,7 @@ INSERT INTO Jogo (id_produto, classificacao_indicativa, engine, has_multiplayer,
 (265, 0, 'SimEngine', true, NULL);
 
 --------------------------------------------------------------------------------------------------
--- 5. DLC (130 registros -> herdam id_produto de 131 a 260)
+-- 5. DLC (135 registros -> herdam id_produto de 131 a 260)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Dlc (id_produto, tipo_conteudo, id_jogo_pai) VALUES
 (131, 'Cosméticos de Passe de Batalha', 5),
@@ -994,7 +994,7 @@ INSERT INTO Dlc (id_produto, tipo_conteudo, id_jogo_pai) VALUES
 (275, 'História', 265);
 
 --------------------------------------------------------------------------------------------------
--- 6. CONQUISTA (130 registros -> 1 por jogo, chave composta)
+-- 6. CONQUISTA (156 registros -> 1 por jogo, chave composta)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Conquista (id_jogo, id_conquista, titulo, descricao) VALUES
 (1, 1, 'Primeiro de Muitos', 'Elimine seu primeiro oponente em partida competitiva oficial'),
@@ -1155,7 +1155,7 @@ INSERT INTO Conquista (id_jogo, id_conquista, titulo, descricao) VALUES
 (261, 10, 'Platina Divina', 'Desbloqueie todas as outras conquistas');
 
 --------------------------------------------------------------------------------------------------
--- 7. DESBLOQUEIA (130 registros -> liga Usuario, Jogo, Conquista)
+-- 7. DESBLOQUEIA (159 registros -> liga Usuario, Jogo, Conquista)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Desbloqueia (id_user, id_jogo, id_conquista, data_desbloqueio) VALUES
 (1, 1, 1, '2024-08-10'), (2, 2, 2, '2024-08-11'), (3, 3, 3, '2024-08-12'), (4, 4, 4, '2024-08-15'), (5, 5, 5, '2024-08-18'), 
@@ -1199,7 +1199,7 @@ INSERT INTO Desbloqueia (id_user, id_jogo, id_conquista, data_desbloqueio) VALUE
 (132, 261, 6, CURRENT_DATE), (132, 261, 7, CURRENT_DATE), (132, 261, 8, CURRENT_DATE), (132, 261, 9, CURRENT_DATE), (132, 261, 10, CURRENT_DATE);
 
 --------------------------------------------------------------------------------------------------
--- 8. BIBLIOTECA (130 registros -> 1 por usuário)
+-- 8. BIBLIOTECA (148 registros -> 1 por usuário)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Biblioteca (id_biblioteca, qntd_jogos, data_atualizacao, id_user) VALUES
 (1, 10, '2024-01-10', 1), (2, 2, NULL, 2), (3, 45, '2024-02-15', 3), (4, 1, '2023-12-01', 4), (5, 0, NULL, 5),
@@ -1230,13 +1230,13 @@ INSERT INTO Biblioteca (id_biblioteca, qntd_jogos, data_atualizacao, id_user) VA
 (126, 16, '2024-03-08', 126), (127, 40, '2024-01-25', 127), (128, 6, NULL, 128), (129, 75, '2024-04-12', 129), (130, 13, '2024-02-20', 130),
 (131, 4, CURRENT_DATE, 131), (132, 1, CURRENT_DATE, 132), (133, 1, CURRENT_DATE, 133), 
 (134, 1, CURRENT_DATE, 134), (135, 1, CURRENT_DATE, 135), (136, 1, CURRENT_DATE, 136), 
-(137, 2, CURRENT_DATE, 137), (138, 2, CURRENT_DATE, 138), (139, 2, CURRENT_DATE, 139), 
-(140, 2, CURRENT_DATE, 140), (141, 2, CURRENT_DATE, 141), (142, 7, CURRENT_DATE, 142), 
+(137, 16, '2026-05-20', 137), (138, 16, '2026-06-02', 138), (139, 16, '2026-05-22', 139), 
+(140, 16, '2026-06-11', 140), (141, 16, '2026-05-28', 141), (142, 7, CURRENT_DATE, 142), 
 (143, 7, CURRENT_DATE, 143), (144, 7, CURRENT_DATE, 144), (145, 7, CURRENT_DATE, 145), 
 (146, 7, CURRENT_DATE, 146), (147, 7, CURRENT_DATE, 147), (148, 7, CURRENT_DATE, 148);
 
 --------------------------------------------------------------------------------------------------
--- 9. ARMAZENA (130 registros -> associa Biblioteca a Produto)
+-- 9. ARMAZENA (464 registros -> associa Biblioteca a Produto)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, ultima_sessao, data_aqs, status_progresso) VALUES
 (1, 1, '120:30:00', '2026-05-15 14:20:00', '2024-01-10', 'Em Andamento'),
@@ -1627,10 +1627,85 @@ INSERT INTO Armazena (id_biblioteca, id_produto, tempo_jogado, ultima_sessao, da
 (131, 261, '10:00:00', NULL, '2024-03-10', NULL), 
 (131, 262, '10:00:00', NULL, '2024-03-10', NULL),
 (131, 263, '10:00:00', NULL, '2024-03-10', NULL), 
-(131, 264, '10:00:00', NULL, '2024-03-10', NULL);
+(131, 264, '10:00:00', NULL, '2024-03-10', NULL),
+(137, 1, '00:00:00', NULL, '2024-02-15', 'Não Iniciado'),
+(137, 2, '00:00:00', NULL, '2024-05-10', 'Não Iniciado'),
+(137, 3, '00:00:00', NULL, '2024-07-19', 'Não Iniciado'),
+(137, 4, '00:00:00', NULL, '2024-10-05', 'Não Iniciado'),
+(137, 5, '00:00:00', NULL, '2024-12-25', 'Não Iniciado'),
+(137, 6, '00:00:00', NULL, '2025-01-18', 'Não Iniciado'),
+(137, 7, '00:00:00', NULL, '2025-03-22', 'Não Iniciado'),
+(137, 8, '00:00:00', NULL, '2025-05-14', 'Não Iniciado'),
+(137, 9, '00:00:00', NULL, '2025-07-08', 'Não Iniciado'),
+(137, 10, '00:00:00', NULL, '2025-09-30', 'Não Iniciado'),
+(137, 11, '00:00:00', NULL, '2025-11-12', 'Não Iniciado'),
+(137, 12, '00:00:00', NULL, '2026-01-05', 'Não Iniciado'),
+(137, 13, '00:00:00', NULL, '2026-02-20', 'Não Iniciado'),
+(137, 14, '00:00:00', NULL, '2026-04-15', 'Não Iniciado'),
+(137, 16, '00:00:00', NULL, '2026-05-18', 'Não Iniciado'),
+(138, 1, '00:00:00', NULL, '2024-03-12', 'Não Iniciado'),
+(138, 2, '00:00:00', NULL, '2024-04-28', 'Não Iniciado'),
+(138, 3, '00:00:00', NULL, '2024-06-15', 'Não Iniciado'),
+(138, 4, '00:00:00', NULL, '2024-09-22', 'Não Iniciado'),
+(138, 5, '00:00:00', NULL, '2024-11-02', 'Não Iniciado'),
+(138, 6, '00:00:00', NULL, '2025-02-10', 'Não Iniciado'),
+(138, 7, '00:00:00', NULL, '2025-04-05', 'Não Iniciado'),
+(138, 8, '00:00:00', NULL, '2025-06-18', 'Não Iniciado'),
+(138, 9, '00:00:00', NULL, '2025-08-24', 'Não Iniciado'),
+(138, 10, '00:00:00', NULL, '2025-10-14', 'Não Iniciado'),
+(138, 11, '00:00:00', NULL, '2025-12-01', 'Não Iniciado'),
+(138, 12, '00:00:00', NULL, '2026-01-26', 'Não Iniciado'),
+(138, 13, '00:00:00', NULL, '2026-03-08', 'Não Iniciado'),
+(138, 14, '00:00:00', NULL, '2026-05-11', 'Não Iniciado'),
+(138, 16, '00:00:00', NULL, '2026-06-02', 'Não Iniciado'),
+(139, 1, '00:00:00', NULL, '2024-01-20', 'Não Iniciado'),
+(139, 2, '00:00:00', NULL, '2024-04-14', 'Não Iniciado'),
+(139, 3, '00:00:00', NULL, '2024-07-05', 'Não Iniciado'),
+(139, 4, '00:00:00', NULL, '2024-08-30', 'Não Iniciado'),
+(139, 5, '00:00:00', NULL, '2024-11-15', 'Não Iniciado'),
+(139, 6, '00:00:00', NULL, '2025-01-22', 'Não Iniciado'),
+(139, 7, '00:00:00', NULL, '2025-03-11', 'Não Iniciado'),
+(139, 8, '00:00:00', NULL, '2025-05-27', 'Não Iniciado'),
+(139, 9, '00:00:00', NULL, '2025-07-14', 'Não Iniciado'),
+(139, 10, '00:00:00', NULL, '2025-09-09', 'Não Iniciado'),
+(139, 11, '00:00:00', NULL, '2025-10-24', 'Não Iniciado'),
+(139, 12, '00:00:00', NULL, '2026-01-13', 'Não Iniciado'),
+(139, 13, '00:00:00', NULL, '2026-02-25', 'Não Iniciado'),
+(139, 14, '00:00:00', NULL, '2026-04-08', 'Não Iniciado'),
+(139, 16, '00:00:00', NULL, '2026-05-20', 'Não Iniciado'),
+(140, 1, '00:00:00', NULL, '2024-02-28', 'Não Iniciado'),
+(140, 2, '00:00:00', NULL, '2024-05-19', 'Não Iniciado'),
+(140, 3, '00:00:00', NULL, '2024-06-30', 'Não Iniciado'),
+(140, 4, '00:00:00', NULL, '2024-09-11', 'Não Iniciado'),
+(140, 5, '00:00:00', NULL, '2024-12-05', 'Não Iniciado'),
+(140, 6, '00:00:00', NULL, '2025-02-14', 'Não Iniciado'),
+(140, 7, '00:00:00', NULL, '2025-04-20', 'Não Iniciado'),
+(140, 8, '00:00:00', NULL, '2025-06-12', 'Não Iniciado'),
+(140, 9, '00:00:00', NULL, '2025-08-05', 'Não Iniciado'),
+(140, 10, '00:00:00', NULL, '2025-10-19', 'Não Iniciado'),
+(140, 11, '00:00:00', NULL, '2025-11-30', 'Não Iniciado'),
+(140, 12, '00:00:00', NULL, '2026-02-02', 'Não Iniciado'),
+(140, 13, '00:00:00', NULL, '2026-03-15', 'Não Iniciado'),
+(140, 14, '00:00:00', NULL, '2026-04-29', 'Não Iniciado'),
+(140, 16, '00:00:00', NULL, '2026-06-10', 'Não Iniciado'),
+(141, 1, '00:00:00', NULL, '2024-03-05', 'Não Iniciado'),
+(141, 2, '00:00:00', NULL, '2024-06-10', 'Não Iniciado'),
+(141, 3, '00:00:00', NULL, '2024-08-14', 'Não Iniciado'),
+(141, 4, '00:00:00', NULL, '2024-10-22', 'Não Iniciado'),
+(141, 5, '00:00:00', NULL, '2024-11-29', 'Não Iniciado'),
+(141, 6, '00:00:00', NULL, '2025-01-08', 'Não Iniciado'),
+(141, 7, '00:00:00', NULL, '2025-03-17', 'Não Iniciado'),
+(141, 8, '00:00:00', NULL, '2025-05-22', 'Não Iniciado'),
+(141, 9, '00:00:00', NULL, '2025-07-26', 'Não Iniciado'),
+(141, 10, '00:00:00', NULL, '2025-09-12', 'Não Iniciado'),
+(141, 11, '00:00:00', NULL, '2025-11-05', 'Não Iniciado'),
+(141, 12, '00:00:00', NULL, '2026-01-20', 'Não Iniciado'),
+(141, 13, '00:00:00', NULL, '2026-02-28', 'Não Iniciado'),
+(141, 14, '00:00:00', NULL, '2026-04-10', 'Não Iniciado'),
+(141, 16, '00:00:00', NULL, '2026-05-25', 'Não Iniciado');
 
 --------------------------------------------------------------------------------------------------
--- 10. PEDIDOS (130 registros)
+-- 10. PEDIDOS (162 registros)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALUES
 (1, '2024-01-10', true, 0.00, 1), 
@@ -1786,18 +1861,18 @@ INSERT INTO Pedidos (id_pedido, data_compra, status, valor_pedido, id_user) VALU
 (162, '2024-04-15', true, 609.50, 148),
 (145, '2024-03-10', true, 600.00, 131),
 (146, '2024-01-10', true, 200.00, 132),
-(147, '2024-03-02', true, 150.00, 133), -- Venda de Lançamento (Day 2)
-(148, '2024-03-05', true, 150.00, 134), -- Venda de Lançamento (Day 5)
-(149, '2024-03-25', true, 150.00, 135), -- Venda de Cauda Longa (Day 25)
+(147, '2024-03-02', true, 150.00, 133),
+(148, '2024-03-05', true, 150.00, 134),
+(149, '2024-03-25', true, 150.00, 135),
 (150, '2024-05-08', true, 200.00, 136),
-(151, '2024-01-30', true, 14950.00, 137), 
-(152, '2024-01-30', true, 14950.00, 138),
-(153, '2024-01-30', true, 14950.00, 139), 
-(154, '2024-01-30', true, 14950.00, 140),
-(155, '2024-01-30', true, 14950.00, 141);
+(181, '2024-01-30', true, 2144.39, 137),
+(182, '2024-01-30', true, 2144.39, 138), 
+(183, '2024-01-30', true, 2144.39, 139),
+(184, '2024-01-30', true, 2144.39, 140), 
+(185, '2024-01-30', true, 2144.39, 141); 
 
 --------------------------------------------------------------------------------------------------
--- 11. ITENS_PEDIDOS (130 registros)
+-- 11. ITENS_PEDIDOS (295 registros)
 --------------------------------------------------------------------------------------------------
 INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, preco_original, status_pedido) VALUES
 (1, 1, 1, 0.00, 0.00, 'Entregue'), 
@@ -1971,11 +2046,6 @@ INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, pre
 (148, 262, 1, 150.00, 150.00, 'Entregue'), 
 (149, 262, 1, 150.00, 150.00, 'Entregue'),
 (150, 263, 1, 200.00, 200.00, 'Entregue'),
-(151, 15, 50, 299.00, 299.00, 'Entregue'), 
-(152, 15, 50, 299.00, 299.00, 'Entregue'),
-(153, 15, 50, 299.00, 299.00, 'Entregue'), 
-(154, 15, 50, 299.00, 299.00, 'Entregue'),
-(155, 15, 50, 299.00, 299.00, 'Entregue'),
 (156, 22, 1, 124.50, 249.00, 'Entregue'), 
 (156, 23, 1, 149.50, 299.00, 'Entregue'),
 (156, 24, 1, 99.50, 199.00, 'Entregue'),  
@@ -2024,10 +2094,85 @@ INSERT INTO itens_pedidos (id_pedido, id_produto, quantidade, preco_momento, pre
 (162, 25, 1, 169.50, 339.00, 'Entregue'),
 (162, 26, 1, 72.00, 144.00, 'Entregue'),  
 (162, 27, 1, 64.50, 129.00, 'Entregue'),
-(162, 28, 1, 19.95, 39.90, 'Entregue');
+(162, 28, 1, 19.95, 39.90, 'Entregue'),
+(181, 1, 1, 0.00, 0.00, 'Entregue'),
+(181, 2, 1, 0.00, 0.00, 'Entregue'),
+(181, 3, 1, 0.00, 0.00, 'Entregue'),
+(181, 4, 1, 149.90, 149.90, 'Entregue'),
+(181, 5, 1, 249.00, 249.00, 'Entregue'),
+(181, 6, 1, 129.99, 129.99, 'Entregue'),
+(181, 7, 1, 199.90, 199.90, 'Entregue'),
+(181, 8, 1, 229.90, 229.90, 'Entregue'),
+(181, 9, 1, 159.00, 159.00, 'Entregue'),
+(181, 10, 1, 199.00, 199.00, 'Entregue'),
+(181, 11, 1, 139.90, 139.90, 'Entregue'),
+(181, 12, 1, 179.90, 179.90, 'Entregue'),
+(181, 13, 1, 249.00, 249.00, 'Entregue'),
+(181, 14, 1, 99.90, 99.90, 'Entregue'),
+(181, 16, 1, 159.00, 159.00, 'Entregue'),
+(182, 1, 1, 0.00, 0.00, 'Entregue'),
+(182, 2, 1, 0.00, 0.00, 'Entregue'),
+(182, 3, 1, 0.00, 0.00, 'Entregue'),
+(182, 4, 1, 149.90, 149.90, 'Entregue'),
+(182, 5, 1, 249.00, 249.00, 'Entregue'),
+(182, 6, 1, 129.99, 129.99, 'Entregue'),
+(182, 7, 1, 199.90, 199.90, 'Entregue'),
+(182, 8, 1, 229.90, 229.90, 'Entregue'),
+(182, 9, 1, 159.00, 159.00, 'Entregue'),
+(182, 10, 1, 199.00, 199.00, 'Entregue'),
+(182, 11, 1, 139.90, 139.90, 'Entregue'),
+(182, 12, 1, 179.90, 179.90, 'Entregue'),
+(182, 13, 1, 249.00, 249.00, 'Entregue'),
+(182, 14, 1, 99.90, 99.90, 'Entregue'),
+(182, 16, 1, 159.00, 159.00, 'Entregue'),
+(183, 1, 1, 0.00, 0.00, 'Entregue'),
+(183, 2, 1, 0.00, 0.00, 'Entregue'),
+(183, 3, 1, 0.00, 0.00, 'Entregue'),
+(183, 4, 1, 149.90, 149.90, 'Entregue'),
+(183, 5, 1, 249.00, 249.00, 'Entregue'),
+(183, 6, 1, 129.99, 129.99, 'Entregue'),
+(183, 7, 1, 199.90, 199.90, 'Entregue'),
+(183, 8, 1, 229.90, 229.90, 'Entregue'),
+(183, 9, 1, 159.00, 159.00, 'Entregue'),
+(183, 10, 1, 199.00, 199.00, 'Entregue'),
+(183, 11, 1, 139.90, 139.90, 'Entregue'),
+(183, 12, 1, 179.90, 179.90, 'Entregue'),
+(183, 13, 1, 249.00, 249.00, 'Entregue'),
+(183, 14, 1, 99.90, 99.90, 'Entregue'),
+(183, 16, 1, 159.00, 159.00, 'Entregue'),
+(184, 1, 1, 0.00, 0.00, 'Entregue'),
+(184, 2, 1, 0.00, 0.00, 'Entregue'),
+(184, 3, 1, 0.00, 0.00, 'Entregue'),
+(184, 4, 1, 149.90, 149.90, 'Entregue'),
+(184, 5, 1, 249.00, 249.00, 'Entregue'),
+(184, 6, 1, 129.99, 129.99, 'Entregue'),
+(184, 7, 1, 199.90, 199.90, 'Entregue'),
+(184, 8, 1, 229.90, 229.90, 'Entregue'),
+(184, 9, 1, 159.00, 159.00, 'Entregue'),
+(184, 10, 1, 199.00, 199.00, 'Entregue'),
+(184, 11, 1, 139.90, 139.90, 'Entregue'),
+(184, 12, 1, 179.90, 179.90, 'Entregue'),
+(184, 13, 1, 249.00, 249.00, 'Entregue'),
+(184, 14, 1, 99.90, 99.90, 'Entregue'),
+(184, 16, 1, 159.00, 159.00, 'Entregue'),
+(185, 1, 1, 0.00, 0.00, 'Entregue'),
+(185, 2, 1, 0.00, 0.00, 'Entregue'),
+(185, 3, 1, 0.00, 0.00, 'Entregue'),
+(185, 4, 1, 149.90, 149.90, 'Entregue'),
+(185, 5, 1, 249.00, 249.00, 'Entregue'),
+(185, 6, 1, 129.99, 129.99, 'Entregue'),
+(185, 7, 1, 199.90, 199.90, 'Entregue'),
+(185, 8, 1, 229.90, 229.90, 'Entregue'),
+(185, 9, 1, 159.00, 159.00, 'Entregue'),
+(185, 10, 1, 199.00, 199.00, 'Entregue'),
+(185, 11, 1, 139.90, 139.90, 'Entregue'),
+(185, 12, 1, 179.90, 179.90, 'Entregue'),
+(185, 13, 1, 249.00, 249.00, 'Entregue'),
+(185, 14, 1, 99.90, 99.90, 'Entregue'),
+(185, 16, 1, 159.00, 159.00, 'Entregue');
 
 --------------------------------------------------------------------------------------------------
--- 12. REVIEW (130 registros)
+-- 12. REVIEW (177 registros)
 --------------------------------------------------------------------------------------------------
 INSERT INTO Review (id_review, data_postagem, nota, cometario, id_user, id_produto) VALUES
 (1, '2024-05-16', 5, 'Melhor jogo competitivo do mercado, viciante.', 1, 1),
@@ -2209,7 +2354,7 @@ INSERT INTO Review (id_review, data_postagem, nota, cometario, id_user, id_produ
 (177, '2026-06-15', 5, 'Para mim é o melhor passatempo casual.', 48, 23);
 
 --------------------------------------------------------------------------------------------------
--- 13. PROMOCAO (130 registros)
+-- 13. PROMOCAO (138 registros)
 --------------------------------------------------------------------------------------------------
 INSERT INTO promocao (id_promocao, id_produto, data_fim, data_inicio, percentual_desconto) VALUES
 (1, 4, '2024-06-01', '2024-05-15', 50.00), 
@@ -2350,3 +2495,246 @@ INSERT INTO promocao (id_promocao, id_produto, data_fim, data_inicio, percentual
 (136, 26, '2024-04-30', '2024-04-01', 50.00),
 (137, 27, '2024-04-30', '2024-04-01', 50.00),
 (138, 28, '2024-04-30', '2024-04-01', 50.00);
+
+-- CONSULTAS
+
+-- 1 REVIEW DE MESTRES (PESSOAS QUE PLLATINARAM)
+SELECT 
+    p.Nome AS jogo,
+    u.nickname AS platinador,
+    r.nota,
+    r.cometario,
+    r.data_postagem
+FROM Review r
+JOIN (SELECT id_user, id_jogo, COUNT(id_conquista) AS desbloqueadas FROM Desbloqueia GROUP BY id_user, id_jogo)
+uc ON r.id_user = uc.id_user AND r.id_produto = uc.id_jogo --conquistas do usuario
+JOIN (SELECT id_jogo, COUNT(id_conquista) AS total FROM Conquista GROUP BY id_jogo HAVING COUNT(id_conquista) > 0)
+tc ON uc.id_jogo = tc.id_jogo --conquistas totais do jogo
+JOIN Produto p ON r.id_produto = p.id_produto
+JOIN Usuario u ON r.id_user = u.id_user
+WHERE uc.desbloqueadas = tc.total -- O usuario da review deve ter platinado
+ORDER BY p.Nome, r.data_postagem DESC;
+
+-- 2. AZARADOS QUE COMPRARAM ANTES DE PROMOCAO
+SELECT 
+    u.nickname,
+    u.email,
+    p.Nome AS jogo,
+    ped.data_compra,
+    ip.preco_original AS valor_pago,
+    prom.data_inicio AS inicio_promocao,
+    prom.percentual_desconto
+FROM itens_pedidos ip
+JOIN Pedidos ped ON ip.id_pedido = ped.id_pedido
+JOIN Usuario u ON ped.id_user = u.id_user
+JOIN Produto p ON ip.id_produto = p.id_produto
+JOIN promocao prom ON p.id_produto = prom.id_produto
+WHERE ped.status = true 
+  -- Comprado até 7 dias antes do início da promoção
+  AND ped.data_compra >= (prom.data_inicio - INTERVAL '7 days') 
+  AND ped.data_compra < prom.data_inicio
+  -- Garante que o usuário pagou o preço cheio na época
+  AND ip.preco_momento = ip.preco_original 
+ORDER BY ped.data_compra DESC;
+
+-- 3. FECHAMENTO FINANCEIRO
+SELECT 
+    d.razao_social AS desenvolvedora,
+    COUNT(DISTINCT p.id_produto) AS qtd_produtos_publicados,
+    SUM(ip.preco_momento * ip.quantidade) AS receita_total_bruta,
+    SUM(ip.quantidade) AS copias_vendidas,
+    ROUND(AVG(r.nota), 2) AS qualidade_media_portfolio
+FROM Desenvolvedora d
+JOIN Produto p ON d.id_desenvolvedora = p.id_desenvolvedora
+JOIN itens_pedidos ip ON p.id_produto = ip.id_produto
+JOIN Pedidos ped ON ip.id_pedido = ped.id_pedido 
+LEFT JOIN Review r ON p.id_produto = r.id_produto
+WHERE ped.status = true -- Apenas pedidos finalizados/pagos
+GROUP BY d.id_desenvolvedora, d.razao_social
+ORDER BY receita_total_bruta DESC;
+
+-- 4. PLATINAS
+SELECT 
+    u.nickname,
+    p.Nome AS jogo_platinado,
+    tc.total_conquistas AS total_de_conquistas_do_jogo,
+    a.tempo_jogado AS tempo_gasto_para_platinar
+FROM (
+    SELECT id_user, id_jogo, COUNT(id_conquista) AS conquistas_desbloqueadas
+    FROM Desbloqueia
+    GROUP BY id_user, id_jogo
+) uc
+JOIN (
+    SELECT id_jogo, COUNT(id_conquista) AS total_conquistas
+    FROM Conquista
+    GROUP BY id_jogo
+    HAVING COUNT(id_conquista) > 1 --jogos com 1 conquista nao sao considerados platina
+) tc ON uc.id_jogo = tc.id_jogo
+JOIN Usuario u ON uc.id_user = u.id_user
+JOIN Produto p ON uc.id_jogo = p.id_produto
+JOIN Biblioteca b ON u.id_user = b.id_user
+JOIN Armazena a ON b.id_biblioteca = a.id_biblioteca AND p.id_produto = a.id_produto
+WHERE uc.conquistas_desbloqueadas = tc.total_conquistas -- O usuário tem 100%
+ORDER BY tc.total_conquistas DESC, u.nickname;
+
+-- 5. JOGOS POUCOS VENDIDOS E BEM AVALIADOS
+SELECT 
+    ep.Nome,
+    ep.preco_base,
+    ep.total_vendas,
+    ROUND(ep.media_notas, 2) AS nota_media
+FROM (
+	SELECT 
+		p.id_produto,
+		p.Nome,
+		p.preco_base,
+		COUNT(ip.id_produto) AS total_vendas,
+		COALESCE(AVG(r.nota), 0) AS media_notas
+	FROM Produto p
+	JOIN Jogo j ON p.id_produto = j.id_produto 
+	LEFT JOIN itens_pedidos ip ON p.id_produto = ip.id_produto
+	LEFT JOIN Review r ON p.id_produto = r.id_produto
+	GROUP BY p.id_produto, p.Nome, p.preco_base
+) ep
+WHERE ep.media_notas >= 4.5 
+  AND ep.total_vendas < (
+      SELECT AVG(sub.vendas_por_jogo)
+      FROM (
+          SELECT COUNT(ip2.id_produto) AS vendas_por_jogo
+          FROM Produto p2
+          JOIN Jogo j2 ON p2.id_produto = j2.id_produto
+          LEFT JOIN itens_pedidos ip2 ON p2.id_produto = ip2.id_produto
+          GROUP BY p2.id_produto
+      ) sub
+  )
+ORDER BY ep.media_notas DESC, ep.total_vendas ASC;
+
+-- 6. TOP 10 MAIORES COMPRADORES DE JOGOS (BALEIAS)
+SELECT 
+    u.nickname,
+    u.email,
+    COUNT(DISTINCT ped.id_pedido) AS total_pedidos_feitos,
+    SUM(ip.quantidade) AS total_itens_comprados,
+    SUM(ip.preco_momento * ip.quantidade) AS total_gasto_historico
+FROM Usuario u
+JOIN Pedidos ped ON u.id_user = ped.id_user
+JOIN itens_pedidos ip ON ped.id_pedido = ip.id_pedido
+WHERE ped.status = true -- pedidos aprovados/pagos
+GROUP BY u.id_user, u.nickname, u.email
+ORDER BY total_gasto_historico DESC
+LIMIT 10;
+
+-- 7. Custo do Jogo Base + Todas as DLCs
+WITH CustoDLCs AS (
+    -- Soma o preço base de todas as DLCs agrupadas pelo jogo pai
+    SELECT d.id_jogo_pai, SUM(p.preco_base) AS total_preco_dlcs
+    FROM Dlc d
+    JOIN Produto p ON d.id_produto = p.id_produto
+    GROUP BY d.id_jogo_pai
+)
+SELECT 
+    p_base.Nome AS jogo_base,
+    p_base.preco_base AS preco_jogo,
+    COALESCE(cd.total_preco_dlcs, 0) AS preco_todas_dlcs,
+    (p_base.preco_base + COALESCE(cd.total_preco_dlcs, 0)) AS preco_pacotao_completo
+FROM Jogo j
+JOIN Produto p_base ON j.id_produto = p_base.id_produto
+LEFT JOIN CustoDLCs cd ON j.id_produto = cd.id_jogo_pai
+ORDER BY preco_pacotao_completo DESC;
+
+-- 8. procura jogadores que compram apenas com desconto
+WITH TotalCompras AS (
+    --Conta todos os jogos comprados por usuário (com filtro de histórico >= 5)
+    SELECT 
+        u.id_user, 
+        u.nickname, 
+        COUNT(ip.id_produto) AS total_jogos_comprados
+    FROM Usuario u
+    JOIN Pedidos ped ON u.id_user = ped.id_user
+    JOIN itens_pedidos ip ON ped.id_pedido = ip.id_pedido
+    WHERE ped.status = true
+    GROUP BY u.id_user, u.nickname
+    HAVING COUNT(ip.id_produto) >= 5
+),
+ComprasComDesconto AS (
+    -- Conta apenas as compras que tiveram desconto
+    SELECT 
+        ped.id_user, 
+        COUNT(ip.id_produto) AS comprados_com_desconto
+    FROM Pedidos ped
+    JOIN itens_pedidos ip ON ped.id_pedido = ip.id_pedido
+    WHERE ped.status = true 
+      AND ip.preco_momento < ip.preco_original
+    GROUP BY ped.id_user
+)
+-- Junta as subconsultas acima
+SELECT 
+    tc.nickname,
+    tc.total_jogos_comprados,
+    COALESCE(cd.comprados_com_desconto, 0) AS comprados_com_desconto,
+    ROUND((COALESCE(cd.comprados_com_desconto, 0) * 100.0) / tc.total_jogos_comprados, 2) AS taxa_desconto_pct
+FROM TotalCompras tc
+LEFT JOIN ComprasComDesconto cd ON tc.id_user = cd.id_user
+WHERE tc.total_jogos_comprados = comprados_com_desconto
+ORDER BY taxa_desconto_pct DESC;
+
+-- 9. taxa de adesao de DLCS
+
+SELECT 
+    p_jogo.Nome AS jogo_base,
+    p_dlc.Nome AS nome_dlc,
+    COUNT(DISTINCT a_jogo.id_biblioteca) AS donos_do_jogo_base,
+    COUNT(DISTINCT a_dlc.id_biblioteca) AS donos_da_dlc,
+    ROUND((COUNT(DISTINCT a_dlc.id_biblioteca) * 100.0) / NULLIF(COUNT(DISTINCT a_jogo.id_biblioteca), 0), 2) AS attach_rate_pct
+FROM Dlc d
+JOIN Produto p_dlc ON d.id_produto = p_dlc.id_produto
+JOIN Produto p_jogo ON d.id_jogo_pai = p_jogo.id_produto
+-- Junta para encontrar quem tem o jogo base
+JOIN Armazena a_jogo ON p_jogo.id_produto = a_jogo.id_produto
+-- Junta para encontrar quem tem a DLC E TAMBÉM o jogo base
+LEFT JOIN Armazena a_dlc ON p_dlc.id_produto = a_dlc.id_produto AND a_jogo.id_biblioteca = a_dlc.id_biblioteca
+GROUP BY p_jogo.Nome, p_dlc.Nome
+ORDER BY attach_rate_pct DESC;
+
+-- 10. peso do lançamento (compras de até 7 dias depois do lançamento)
+
+SELECT 
+    p.Nome AS jogo,
+    SUM(CASE WHEN ped.data_compra <= (p.data_lancamento + INTERVAL '7 days') THEN (ip.preco_momento * ip.quantidade) ELSE 0 END) AS receita_lancamento_7d,
+    SUM(CASE WHEN ped.data_compra > (p.data_lancamento + INTERVAL '7 days') THEN (ip.preco_momento * ip.quantidade) ELSE 0 END) AS receita_pos_lancamento,
+    SUM(ip.preco_momento * ip.quantidade) AS receita_total
+FROM Produto p
+JOIN Jogo j ON p.id_produto = j.id_produto
+JOIN itens_pedidos ip ON p.id_produto = ip.id_produto
+JOIN Pedidos ped ON ip.id_pedido = ped.id_pedido
+WHERE ped.status = true
+GROUP BY p.id_produto, p.Nome
+ORDER BY receita_lancamento_7d DESC;
+
+-- 11. Jogos Comprados, Mas Nunca Jogados
+SELECT 
+    u.nickname,
+    p.Nome AS jogo_esquecido,
+    a.data_aqs AS data_aquisicao,
+    CURRENT_DATE - a.data_aqs AS dias_na_gaveta
+FROM Usuario u
+JOIN Biblioteca b ON u.id_user = b.id_user
+JOIN Armazena a ON b.id_biblioteca = a.id_biblioteca
+JOIN Produto p ON a.id_produto = p.id_produto
+WHERE a.tempo_jogado = '00:00:00' 
+  AND a.data_aqs <= (CURRENT_DATE - INTERVAL '6 months')
+ORDER BY dias_na_gaveta DESC;
+
+-- 12. usuarios e seus jogos
+SELECT 
+    u.nickname,
+    u.email,
+    p.Nome AS nome_do_jogo,
+    a.tempo_jogado,
+    a.status_progresso
+FROM Usuario u
+JOIN Biblioteca b ON u.id_user = b.id_user
+JOIN Armazena a ON b.id_biblioteca = a.id_biblioteca
+JOIN Produto p ON a.id_produto = p.id_produto
+JOIN Jogo j ON p.id_produto = j.id_produto 
+ORDER BY u.nickname, p.Nome;
