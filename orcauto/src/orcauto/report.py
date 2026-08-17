@@ -8,13 +8,14 @@ from .ooxml import cell_xml
 from .planner import NEW, SUBSTITUTED, UPDATED, SheetPlan
 from .textutil import column_letter
 
-HEADINGS = ("1)", "2)", "3)", "4)", "LEVANTAMENTO")
+HEADINGS = ("1)", "2)", "3)", "4)", "5)", "LEVANTAMENTO")
 
 
 @dataclass
 class Audit:
     plans: list[SheetPlan] = field(default_factory=list)
     suffix: str = " (AUTO)"
+    budget_codes: set[str] = field(default_factory=set)
 
     def written_rows(self):
         for plan in self.plans:
@@ -95,6 +96,27 @@ def build_rows(audit: Audit) -> list[list]:
         rows.append([plan.sheet + audit.suffix, planned.row, planned.item.code,
                      round(existing, 4), planned.item.quantity,
                      round(existing - planned.item.quantity, 4), treatment])
+    rows += [[], ["5) LINHAS DA ABA SEM CONTRAPARTIDA NO ORCAMENTO (nao foram tocadas)"],
+             ["Estas linhas ja existiam na aba original e continuam somando no TOTAL, mas o codigo delas "
+              "nao corresponde a nenhum item do topico. A automacao nao as altera; confira se ainda valem."],
+             ["ABA (AUTO)", "LINHA", "CODIGO", "DESCRICAO", "QUANT.", "SITUACAO"]]
+    for plan in audit.plans:
+        escritas = set(plan.rows)
+        for row in plan.layout.rows_inside_total():
+            service = plan.layout.rows[row]
+            if row in escritas or service.is_blank:
+                continue
+            if service.code and service.code in audit.budget_codes:
+                situacao = "codigo existe no orcamento, mas em outro topico"
+            elif service.code:
+                situacao = "codigo nao consta em nenhum item do orcamento"
+            else:
+                situacao = "linha sem codigo de servico (lancamento manual)"
+            if service.quantity is None and (service.description or "").strip():
+                situacao += "; quantidade vazia ou em erro"
+            rows.append([plan.sheet + audit.suffix, row, service.code or "",
+                         service.description or "", service.quantity, situacao])
+
     return rows
 
 

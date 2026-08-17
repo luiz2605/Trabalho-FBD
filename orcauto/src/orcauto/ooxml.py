@@ -239,7 +239,7 @@ def ensure_row(xml: str, row: int, template_row: int | None = None) -> str:
         attributes = "".join(
             f' {name}="{value}"' for name, value in re.findall(r'\b(\w+(?::\w+)?)="([^"]*)"', head)
             if name not in ("r", "hidden"))
-        for found in re.finditer(r'<c r="([A-Z]+)\d+"(?:\s[^>]*)?(?:/>|>.*?</c>)', block, re.S):
+        for found in _any_cell_pattern().finditer(block):
             style = re.search(r'\bs="(\d+)"', found.group(0))
             cells += cell_xml(f"{found.group(1)}{row}", style.group(1) if style else None)
     element = f'<row r="{row}"{attributes}>{cells}</row>'
@@ -265,8 +265,21 @@ def _row_match(xml: str, row: int):
     return match
 
 
+# Atributos de uma célula. Precisa ser NÃO-guloso: `[^>]*` guloso consome
+# também a barra de uma célula auto-fechada (`<c r="D12" s="169"/>`), a
+# alternância cai em `>.*?</c>` e o casamento passa a engolir as células
+# seguintes até o próximo `</c>` — apagando-as na regravação.
+_ATTRS = r'[^>]*?'
+_CELL_BODY = r'(?:/>|>.*?</c>)'
+
+
 def _cell_pattern(ref: str) -> re.Pattern:
-    return re.compile(r'<c r="%s"(?:\s[^>]*)?(?:/>|>.*?</c>)' % ref, re.S)
+    return re.compile(r'<c r="%s"%s%s' % (ref, _ATTRS, _CELL_BODY), re.S)
+
+
+def _any_cell_pattern(row: int | None = None) -> re.Pattern:
+    suffix = str(row) if row is not None else r"\d+"
+    return re.compile(r'<c r="([A-Z]+)%s"%s%s' % (suffix, _ATTRS, _CELL_BODY), re.S)
 
 
 def cell_style(xml: str, row: int, column: str) -> str | None:
@@ -298,7 +311,7 @@ def set_cell(xml: str, row: int, column: str, create: bool = True, **kwargs) -> 
 def _insert_cell(block: str, column: str, replacement: str) -> str:
     from .textutil import column_index
     position = None
-    for found in re.finditer(r'<c r="([A-Z]+)\d+"(?:\s[^>]*)?(?:/>|>.*?</c>)', block, re.S):
+    for found in _any_cell_pattern().finditer(block):
         if column_index(found.group(1)) > column_index(column):
             position = found.start()
             break
@@ -337,9 +350,9 @@ def shift_formula(formula: str, column_delta: int, row_delta: int) -> str:
 def _shared_formulas(block: str, row: int) -> dict[str, tuple[str, str]]:
     """Mapa si -> (fórmula da mestre, coluna da mestre) dentro de uma linha."""
     masters: dict[str, tuple[str, str]] = {}
-    for cell in re.finditer(r'<c r="([A-Z]+)%d"(?:\s[^>]*)?>(.*?)</c>' % row, block, re.S):
+    for cell in _any_cell_pattern(row).finditer(block):
         found = re.search(r'<f\b(?=[^>]*t="shared")(?=[^>]*\bref=")[^>]*si="(\d+)"[^>]*>(.+?)</f>',
-                          cell.group(2), re.S)
+                          cell.group(0), re.S)
         if found:
             masters[found.group(1)] = (_unescape(found.group(2)), cell.group(1))
     return masters

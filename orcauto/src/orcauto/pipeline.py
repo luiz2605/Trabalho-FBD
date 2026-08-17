@@ -9,7 +9,7 @@ import openpyxl
 
 from .compositions import CompositionIndex, build_index
 from .config import Config
-from .layout import SheetLayout, detect
+from .layout import SheetLayout, detect, is_empty
 from .ooxml import Workbook, ensure_row, retarget_sumproduct, set_cell, show_row
 from .pdf_budget import Topic, items_by_code, read_budget
 from .planner import SheetPlan, plan_sheet
@@ -136,7 +136,7 @@ def run(xlsx_path: str | Path, pdf_path: str | Path | None, output: str | Path,
         plans.append(plan)
         _write_sheet(package, plan, layout, config)
 
-    audit = Audit(plans, config.targets.suffix)
+    audit = Audit(plans, config.targets.suffix, budget_codes)
     if config.rules.write_log_sheet:
         bold = package.append_style(bold=True)
         wrap = package.append_style(wrap=True)
@@ -179,8 +179,22 @@ def _write_sheet(package: Workbook, plan: SheetPlan, layout: SheetLayout, config
                            text=planned.composition.unit or planned.item.unit or "")
             if planned.quantity is not None:
                 xml = set_cell(xml, row, layout.quantity_column, number=planned.quantity)
-        elif planned.quantity_source == "orcamento" and planned.quantity is not None:
-            xml = set_cell(xml, row, layout.quantity_column, number=planned.quantity)
+        else:
+            if planned.quantity_source == "orcamento" and planned.quantity is not None:
+                xml = set_cell(xml, row, layout.quantity_column, number=planned.quantity)
+            if config.rules.fill_empty_identity:
+                # a linha já traz o código certo, mas a planilha original pode ter
+                # a unidade/descrição vazia ou presa a um VLOOKUP quebrado (#REF!).
+                # Preenche apenas nesse caso — conteúdo válido nunca é tocado.
+                existing = layout.rows[row]
+                if existing.unit is None and planned.composition.unit:
+                    xml = set_cell(xml, row, layout.unit_column,
+                                   text=planned.composition.unit)
+                    planned.notes.append("unidade preenchida (estava vazia na aba)")
+                if is_empty(existing.description) and planned.composition.description:
+                    xml = set_cell(xml, row, layout.description_column,
+                                   text=planned.composition.description)
+                    planned.notes.append("descrição preenchida (estava vazia na aba)")
         for column, coefficient in planned.coefficients.items():
             xml = set_cell(xml, row, column,
                            formula=coefficient.formula(config.compositions.coefficient_column),

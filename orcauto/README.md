@@ -123,10 +123,18 @@ src/orcauto/
   cli.py            run / inspect / check
 ```
 
+## Auditoria
+
+O `AUDITORIA.md` registra a auditoria de 17/08/2026 sobre a saída real: os dois
+erros confirmados e corrigidos (perda de formatação por regex guloso em
+`ooxml.py`, e unidade vazia em linha `ATUALIZADA`), as hipóteses testadas e
+refutadas, o diagnóstico estrutural da planilha original e a recomendação sobre
+criar colunas novas para insumos sem rastreamento.
+
 ## Testes
 
 ```bash
-pytest              # 70 testes, ~1s
+pytest              # 75 testes, ~1s
 ```
 
 A suíte é autossuficiente: monta uma pasta Excel e um orçamento sintéticos do

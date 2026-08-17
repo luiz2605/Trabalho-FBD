@@ -78,6 +78,9 @@ class RulesConfig:
     quantity_override: dict[str, dict[str, str]] = field(default_factory=dict)
     # amplia o intervalo do TOTAL quando faltarem linhas livres dentro dele
     extend_total_range: bool = True
+    # em linha ATUALIZADA, preenche unidade/descrição que estejam vazias ou em
+    # erro (#REF!), sem jamais sobrescrever conteúdo aproveitável
+    fill_empty_identity: bool = True
     write_log_sheet: bool = True
     log_sheet_name: str = "LOG AUTO"
 

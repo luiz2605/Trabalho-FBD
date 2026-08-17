@@ -19,11 +19,28 @@ _SUMPRODUCT = re.compile(
     re.IGNORECASE)
 
 
+ERROR_VALUES = ("#REF!", "#N/A", "#VALUE!", "#NAME?", "#DIV/0!", "#NULL!", "#NUM!")
+
+
+def is_empty(value) -> bool:
+    """Célula sem conteúdo aproveitável: vazia, ou exibindo um erro do Excel.
+
+    A planilha original tem VLOOKUPs apontando para `#REF!`, que o Excel
+    resolve como texto vazio ou erro. Uma célula assim não carrega informação
+    e pode ser preenchida sem destruir nada do trabalho do orçamentista.
+    """
+    if value is None:
+        return True
+    text = str(value).strip()
+    return not text or text in ERROR_VALUES
+
+
 @dataclass
 class ServiceRow:
     row: int
     code: str | None
     description: str | None
+    unit: str | None
     quantity: float | None
     filled_columns: set[str] = field(default_factory=set)
 
@@ -140,10 +157,12 @@ def _read_row(formula_ws, value_ws, layout: SheetLayout, row: int) -> ServiceRow
     code = value_ws[f"{layout.code_column}{row}"].value
     quantity = value_ws[f"{layout.quantity_column}{row}"].value
     description = value_ws[f"{layout.description_column}{row}"].value
+    unit = value_ws[f"{layout.unit_column}{row}"].value
     return ServiceRow(
         row=row,
         code=str(code).strip() if isinstance(code, str) and str(code).strip() else None,
         description=str(description).strip() if isinstance(description, str) else None,
+        unit=None if is_empty(unit) else str(unit).strip(),
         quantity=quantity if isinstance(quantity, (int, float)) and not isinstance(quantity, bool) else None,
         filled_columns=filled,
     )
