@@ -169,3 +169,18 @@ def test_cell_style_de_celula_autofechada():
            '</row></sheetData></worksheet>')
     assert cell_style(xml, 5, "A") == "7"
     assert cell_style(xml, 5, "B") == "8"
+
+
+def test_formula_com_resultado_textual_declara_o_tipo():
+    """Regressão: uma fórmula cujo cache é texto precisa de `t="str"`.
+
+    Sem o atributo, o leitor trata o cache como número e a pasta inteira fica
+    ilegível (`invalid literal for int()`). Só apareceu na Fase 2, porque até
+    então toda fórmula gravada tinha resultado numérico.
+    """
+    xml = cell_xml("F9", "10", formula='IFERROR(VLOOKUP(F7,x,3,FALSE),"")', value="H")
+    assert 't="str"' in xml
+    assert "<v>H</v>" in xml and "'H'" not in xml
+
+    numerica = cell_xml("G9", "10", formula="1+1", value=2)
+    assert 't="str"' not in numerica and "<v>2</v>" in numerica

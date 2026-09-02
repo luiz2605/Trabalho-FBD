@@ -1,8 +1,5 @@
-__pycache__/
-*.py[cod]
-.pytest_cache/
 .venv/
-venv/
-*.egg-info/
-saida/
-*.AUTO.xlsx
+__pycache__/
+.pytest_cache/
+*.xlsx~
+~$*.xlsx*.egg-info/

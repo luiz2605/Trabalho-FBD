@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Iterable
 
 from .compositions import CompositionIndex
 from .config import CompositionConfig
-from .textutil import format_number
+from .textutil import format_number, normalize
 
 
 @dataclass
@@ -66,35 +67,122 @@ class Resolver:
         self.index = index
         self.config = config or CompositionConfig()
         self._service_re = re.compile(self.config.service_code_re)
-        self._cache: dict[str, dict[str, Coefficient]] = {}
+        self._cache: dict[tuple[str, frozenset], dict[str, Coefficient]] = {}
 
-    def resolve(self, code: str) -> dict[str, Coefficient]:
-        """Todos os insumos-folha de um serviço, com origem e fator."""
-        if code in self._cache:
-            return self._cache[code]
+    def resolve(self, code: str, stop_at: Iterable[str] = ()) -> dict[str, Coefficient]:
+        """Todos os insumos-folha de um serviço, com origem e fator.
+
+        `stop_at` lista códigos que **não** devem ser abertos: mesmo tendo
+        composição própria, eles saem como parcela direta, com o coeficiente
+        de primeiro nível. É o que faz uma coluna rotulada com um código de
+        serviço receber valor — antes ela ficava eternamente vazia, porque o
+        resolvedor devolvia só os insumos de dentro dele.
+        """
+        stop = frozenset(stop_at)
+        key = (code, stop)
+        if key in self._cache:
+            return self._cache[key]
         found: dict[str, list[Term]] = {}
-        self._walk(self.index.get(code), 1.0, 0, (), found, {code})
-        result = {key: Coefficient(key, terms) for key, terms in found.items()}
-        self._cache[code] = result
+        self._walk(self.index.get(code), 1.0, 0, (), found, {code}, stop)
+        result = {key_: Coefficient(key_, terms) for key_, terms in found.items()}
+        self._cache[key] = result
         return result
 
-    def _walk(self, composition, factor, depth, path, found, seen):
+    def _walk(self, composition, factor, depth, path, found, seen, stop=frozenset()):
         if composition is None or depth > self.config.max_depth:
             return
         trail = path + (composition.code,)
         for code, item in composition.inputs.items():
             child = self.index.get(code) if self._service_re.match(code) else None
             recurse = (child is not None and child.code not in seen
+                       and code not in stop
                        and depth < self.config.max_depth)
             if recurse:
                 self._walk(child, factor * item.coefficient, depth + 1, trail,
-                           found, seen | {child.code})
+                           found, seen | {child.code}, stop)
             else:
                 found.setdefault(code, []).append(
                     Term(composition.sheet, item.row, factor, item.coefficient, trail))
 
     def coefficients_for(self, code: str, wanted: dict[str, str]) -> dict[str, Coefficient]:
-        """Filtra a resolução pelas colunas rastreadas: {coluna: código do insumo}."""
-        resolved = self.resolve(code)
+        """Filtra a resolução pelas colunas rastreadas: {coluna: código do insumo}.
+
+        Um código que já tem coluna própria nunca é aberto — senão ele sumiria
+        do resultado e a coluna dele ficaria vazia, enquanto os insumos de
+        dentro dele seriam somados às colunas dos insumos da composição-mãe
+        (a mão de obra da argamassa entrando na mão de obra da alvenaria).
+        """
+        resolved = self.resolve(code, stop_at=wanted.values())
         return {column: resolved[input_code]
                 for column, input_code in wanted.items() if input_code in resolved}
+
+
+@dataclass
+class InputColumn:
+    """Um insumo-folha que merece uma coluna na aba gerada."""
+    code: str
+    description: str
+    unit: str | None
+    used_by: list[str]                      # códigos de serviço que o consomem
+    section: str | None = None              # MATERIAIS, MAO DE OBRA, EQUIPAMENTOS...
+    unresolved_service: bool = False        # parece serviço, mas não tem composição
+
+    @property
+    def label(self) -> str:
+        return self.description or self.code
+
+
+def topic_inputs(items, index, resolver: Resolver,
+                 sections: tuple[str, ...] = (),
+                 expand_subservices: bool = True) -> list[InputColumn]:
+    """Insumos usados por um tópico inteiro, em ordem determinística.
+
+    `expand_subservices=True` (padrão histórico) resolve recursivamente e só
+    insumos-folha viram coluna: a composição C0329 consome o serviço C3129, e o
+    que aparece na aba são os insumos de dentro dele.
+
+    `expand_subservices=False` faz o sub-serviço com composição própria virar
+    ele mesmo uma coluna, com o coeficiente de primeiro nível. É como a planilha
+    feita à mão trabalha — a aba INFRAESTRUTURA real tem uma coluna rotulada
+    `C3129` — e é o que o relatório de erros v3 pede em três casos independentes
+    (a coluna de ARGAMASSA de C3347 e C4592, as colunas C4281/C4282 de C4301).
+    Também é o que elimina a dupla contagem: com o sub-serviço aberto, a mão de
+    obra da argamassa era somada à mão de obra da alvenaria (SERVENTE 10,0 em
+    vez de 7,0 em C3347).
+
+    A ordem é a de primeira aparição, percorrendo os itens na ordem do
+    orçamento, para que duas execuções sobre o mesmo PDF gerem a mesma aba.
+    """
+    columns: dict[str, InputColumn] = {}
+    descriptions = _input_catalog(index)
+    for item in items:
+        composition = index.get(item.code)
+        if composition is None:
+            continue
+        resolved = (resolver.resolve(item.code) if expand_subservices
+                    else resolver.resolve(item.code, stop_at=composition.inputs))
+        for code, coefficient in resolved.items():
+            existing = columns.get(code)
+            if existing is None:
+                description, unit, section = descriptions.get(code, (code, None, None))
+                columns[code] = InputColumn(
+                    code, description, unit, [item.code], section,
+                    unresolved_service=bool(resolver._service_re.match(code)
+                                            and index.get(code) is None))
+            elif item.code not in existing.used_by:
+                existing.used_by.append(item.code)
+    if not sections:
+        return list(columns.values())
+    wanted = [normalize(s) for s in sections]
+    return [c for c in columns.values()
+            if c.section and any(normalize(c.section).startswith(w) for w in wanted)]
+
+
+def _input_catalog(index) -> dict[str, tuple[str, str | None, str | None]]:
+    """Descrição, unidade e seção de cada insumo, como aparecem nas composições."""
+    catalog: dict[str, tuple[str, str | None, str | None]] = {}
+    for composition in index.compositions:
+        for code, item in composition.inputs.items():
+            if code not in catalog and item.description:
+                catalog[code] = (item.description, item.unit, item.section)
+    return catalog

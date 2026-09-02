@@ -27,6 +27,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--pdf", required=True, help="orçamento analítico (.pdf)")
     run.add_argument("--out", required=True, help="arquivo de saída (.xlsx)")
     run.add_argument("--quiet", action="store_true", help="não imprime o relatório")
+    run.add_argument("--log-insercoes", action="store_true",
+                     help="mostra cada coeficiente gravado, com célula e valor anterior")
 
     inspect = sub.add_parser("inspect", help="mostra o que foi detectado, sem gravar nada")
     _add_common(inspect)
@@ -39,14 +41,25 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def command_run(args) -> int:
+    from .audit import configurar_terminal
     from .pipeline import run
+    configurar_terminal(bool(getattr(args, "log_insercoes", False)))
     result = run(args.xlsx, args.pdf, args.out, Config.load(args.config))
     if not args.quiet:
         print(result.report)
-    written = sum(len(plan.rows) for plan in result.plans)
-    skipped = sum(len(plan.skipped) for plan in result.plans)
-    print(f"gerado: {result.output}  ({len(result.plans)} abas, {written} linhas gravadas, "
-          f"{skipped} itens não aplicados)")
+    criadas = [plan for plan in result.synth if plan.created]
+    written = (sum(len(plan.rows) for plan in result.plans)
+               + sum(len(plan.rows) for plan in criadas))
+    skipped = (sum(len(plan.skipped) for plan in result.plans)
+               + sum(len(plan.skipped) for plan in result.synth))
+    print(f"gerado: {result.output}")
+    print(f"  {len(result.plans)} aba(s) preenchida(s), {len(criadas)} aba(s) criada(s) do molde")
+    print(f"  {written} linhas gravadas, {skipped} itens não aplicados")
+    if result.insercoes is not None:
+        print(f"  {len(result.insercoes)} coeficientes inseridos")
+    nao_criadas = [plan for plan in result.synth if not plan.created]
+    for plan in nao_criadas:
+        print(f"  aba não criada — tópico {plan.topic_number} {plan.topic_name}: {plan.reason}")
     return 0
 
 
@@ -54,7 +67,7 @@ def command_inspect(args) -> int:
     import openpyxl
 
     from .compositions import autodetect_sheets, build_index
-    from .layout import detect
+    from .layout import detect, detect_template
     from .pipeline import match_topics
 
     config = Config.load(args.config)
@@ -80,7 +93,27 @@ def command_inspect(args) -> int:
               f"TOTAL linha {layout.total_row} | livres {layout.free_rows()}")
         print(f"   insumos rastreados: {layout.tracked}")
     if not usable:
-        print("nenhuma aba com layout de levantamento reconhecido")
+        print("nenhuma aba com layout de levantamento pronto "
+              "(normal em arquivo-base: as abas serão criadas do molde)")
+
+    template = config.targets.template_sheet
+    molde = None
+    if config.targets.generate_missing and template in formulas.sheetnames:
+        try:
+            molde = detect_template(formulas[template], values[template], config.targets)
+        except Exception as error:
+            print(f"\naba-molde {template!r}: NÃO utilizável — {error}")
+    elif template not in formulas.sheetnames:
+        print(f"\naba-molde {template!r} não existe no arquivo "
+              "(só o modo de preenchimento vai rodar)")
+    if molde is not None:
+        print(f"\naba-molde [{template}]")
+        print(f"   cabeçalho linha {molde.header_row} | insumos linha {molde.input_row} | "
+              f"quantidade coluna {molde.quantity_column}")
+        print(f"   bloco de serviços {molde.first_row}-{molde.last_row} | "
+              f"TOTAL linha {molde.total_row}")
+        print(f"   colunas já formatadas: {', '.join(molde.slots)} "
+              f"({len(molde.slots)}; o que passar disso é acrescentado à direita)")
 
     if args.pdf:
         from .pdf_budget import read_budget
@@ -89,10 +122,19 @@ def command_inspect(args) -> int:
         pairs = dict((topic.number, sheet) for topic, sheet in
                      match_topics(topics, usable, config,
                                   lambda name: name in usable))
+        from .textutil import sanitize_sheet_name
+        taken = set(formulas.sheetnames)
         for topic in topics:
             destino = pairs.get(topic.number)
-            print(f"   {topic.number:>3} {topic.name:<34} {len(topic.items):>3} itens"
-                  + (f"  ->  {destino}" if destino else ""))
+            if destino:
+                destino = f"->  {destino} (preencher)"
+            elif molde is not None:
+                nome = sanitize_sheet_name(topic.name, taken)
+                taken.add(nome)
+                destino = f"->  {nome} (criar do molde)"
+            else:
+                destino = "sem destino"
+            print(f"   {topic.number:>3} {topic.name:<34} {len(topic.items):>3} itens  {destino}")
     return 0
 
 

@@ -7,24 +7,29 @@ from pathlib import Path
 
 import openpyxl
 
+from .audit import Auditoria
 from .compositions import CompositionIndex, build_index
 from .config import Config
-from .layout import SheetLayout, detect, is_empty
-from .ooxml import Workbook, ensure_row, retarget_sumproduct, set_cell, show_row
+from .layout import SheetLayout, TemplateLayout, detect, detect_template, is_empty
+from .ooxml import (Workbook, cell_content, ensure_row, retarget_sumproduct, set_cell,
+                    show_row)
 from .pdf_budget import Topic, items_by_code, read_budget
 from .planner import SheetPlan, plan_sheet
 from .report import Audit, build_rows, log_sheet_xml, text_report
+from .synth import SynthPlan, plan_synthesis, write_synthesis
 from .resolver import Resolver
-from .textutil import normalize, similarity
+from .textutil import normalize, sanitize_sheet_name, similarity
 
 
 @dataclass
 class Result:
     output: Path
     plans: list[SheetPlan] = field(default_factory=list)
+    synth: list[SynthPlan] = field(default_factory=list)
     topics: list[Topic] = field(default_factory=list)
     index: CompositionIndex | None = None
     audit: Audit | None = None
+    insercoes: Auditoria | None = None
 
     @property
     def report(self) -> str:
@@ -110,8 +115,13 @@ def run(xlsx_path: str | Path, pdf_path: str | Path | None, output: str | Path,
         topics = read_budget(Path(pdf_path), config.pdf)
     budget_codes = set(items_by_code(topics))
 
-    formulas = openpyxl.load_workbook(xlsx_path)
-    values = openpyxl.load_workbook(xlsx_path, data_only=True)
+    # `read_only` é o que torna isto viável em servidor: numa pasta com uma aba
+    # de 65 mil linhas, a carga normal do openpyxl materializa tudo e passa de
+    # 450 MB por workbook — e são dois. Em streaming, o par fica em torno de
+    # 50 MB. A detecção de layout já lê por varredura única e limitada, então
+    # não depende de acesso aleatório a célula, que em read_only seria O(n²).
+    formulas = openpyxl.load_workbook(xlsx_path, read_only=True)
+    values = openpyxl.load_workbook(xlsx_path, data_only=True, read_only=True)
     index = build_index(values, config.compositions)
     resolver = Resolver(index, config.compositions)
 
@@ -123,20 +133,33 @@ def run(xlsx_path: str | Path, pdf_path: str | Path | None, output: str | Path,
             return False
 
     pairs = match_topics(topics, list(formulas.sheetnames), config, usable)
-    if not pairs:
-        raise ValueError("nenhum tópico do orçamento casou com uma aba do arquivo; "
-                         "declare `targets.topic_map` na configuração")
+    template = config.targets.template_sheet
+    can_generate = bool(config.targets.generate_missing and template
+                        and template in formulas.sheetnames)
+    if not pairs and not can_generate:
+        # sem aba de destino e sem molde não há o que fazer: ou o arquivo não é
+        # um levantamento, ou o nome do molde está errado na configuração
+        raise ValueError(
+            "nenhum tópico do orçamento casou com uma aba do arquivo e não há aba-molde "
+            f"{template!r} para sintetizar; declare `targets.topic_map` ou "
+            "`targets.template_sheet` na configuração")
 
     package = Workbook(xlsx_path)
+    auditoria = Auditoria()
     plans: list[SheetPlan] = []
     for topic, sheet_name in pairs:
         layout = detect(formulas[sheet_name], values[sheet_name], config.targets)
         plan = plan_sheet(layout, topic.items, index, resolver, budget_codes,
                           topic.number, topic.name, config.rules)
         plans.append(plan)
-        _write_sheet(package, plan, layout, config)
+        _write_sheet(package, plan, layout, config, auditoria)
 
-    audit = Audit(plans, config.targets.suffix, budget_codes)
+    # ---- tópicos sem aba de destino: a aba é sintetizada a partir do molde
+    synth = _synthesize_missing(package, formulas, values, topics, pairs,
+                                index, resolver, config, auditoria)
+
+    audit = Audit(plans, config.targets.suffix, budget_codes, synth,
+                  warnings=index.warnings)
     if config.rules.write_log_sheet:
         bold = package.append_style(bold=True)
         wrap = package.append_style(wrap=True)
@@ -144,7 +167,47 @@ def run(xlsx_path: str | Path, pdf_path: str | Path | None, output: str | Path,
                           log_sheet_xml(build_rows(audit), bold, wrap))
 
     package.save(output)
-    return Result(output=output, plans=plans, topics=topics, index=index, audit=audit)
+    formulas.close()
+    values.close()
+    return Result(output=output, plans=plans, synth=synth, topics=topics,
+                  index=index, audit=audit, insercoes=auditoria)
+
+
+def _synthesize_missing(package: Workbook, formulas, values, topics: list[Topic],
+                        pairs, index, resolver, config: Config,
+                        auditoria: Auditoria | None = None) -> list[SynthPlan]:
+    """Cria uma aba para cada tópico do orçamento que não tem aba de destino.
+
+    Sem molde declarado, ou com `generate_missing` desligado, o modo novo
+    simplesmente não roda e o comportamento anterior é preservado por inteiro.
+    """
+    template = config.targets.template_sheet
+    if not (config.targets.generate_missing and template and template in formulas.sheetnames):
+        return []
+    layout = detect_template(formulas[template], values[template], config.targets)
+
+    handled = {topic.number for topic, _ in pairs}
+    taken = set(formulas.sheetnames) | {sheet.name for sheet in package.pending()}
+    produced: list[SynthPlan] = []
+    for topic in topics:
+        if topic.number in handled:
+            continue
+        name = sanitize_sheet_name(topic.name, taken)
+        plan = plan_synthesis(layout, topic, name, index, resolver, config)
+        if not plan.rows or not plan.columns:
+            # tópico sem nada a levantar (nenhum item com composição, ou nenhum
+            # insumo nas seções configuradas): registra e não cria aba vazia
+            plan.created = False
+            plan.reason = ("nenhum item com composição no arquivo" if not plan.rows
+                           else "nenhum insumo nas seções configuradas em "
+                                "`compositions.column_sections`")
+            produced.append(plan)
+            continue
+        taken.add(name)
+        sheet = package.clone_sheet(template, name)
+        sheet.xml = write_synthesis(sheet.xml, plan, layout, config, auditoria)
+        produced.append(plan)
+    return produced
 
 
 def _style_template(layout: SheetLayout) -> int | None:
@@ -155,7 +218,8 @@ def _style_template(layout: SheetLayout) -> int | None:
     return layout.first_row
 
 
-def _write_sheet(package: Workbook, plan: SheetPlan, layout: SheetLayout, config: Config) -> None:
+def _write_sheet(package: Workbook, plan: SheetPlan, layout: SheetLayout, config: Config,
+                 auditoria: Auditoria | None = None) -> None:
     sheet = package.clone_sheet(plan.sheet, plan.sheet + config.targets.suffix)
     xml = sheet.xml
     template = _style_template(layout)
@@ -196,6 +260,13 @@ def _write_sheet(package: Workbook, plan: SheetPlan, layout: SheetLayout, config
                                    text=planned.composition.description)
                     planned.notes.append("descrição preenchida (estava vazia na aba)")
         for column, coefficient in planned.coefficients.items():
+            if auditoria is not None:
+                auditoria.inserir(aba=plan.sheet + config.targets.suffix,
+                                  codigo=planned.item.code,
+                                  insumo=coefficient.input_code,
+                                  celula=f"{column}{row}",
+                                  anterior=cell_content(xml, row, column),
+                                  novo=round(coefficient.value, 6))
             xml = set_cell(xml, row, column,
                            formula=coefficient.formula(config.compositions.coefficient_column),
                            value=coefficient.value)

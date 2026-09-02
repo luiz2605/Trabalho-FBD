@@ -15,7 +15,7 @@ line_tolerance = 2.5               # tolerância vertical para agrupar palavras
 
 [compositions]
 sheets = []                        # vazio = detecta as abas sozinho
-title_re = '^([A-Z0-9][A-Z0-9\.\-/]*?)\s+-\s+(.*)$'
+title_re = '^([A-Z0-9][A-Z0-9\.\-/]*?)\s*[-–—]\s*(.*)$'   # traço de qualquer tipo, com ou sem espaço
 section_keywords = ["EQUIPAMENTO", "MAO DE OBRA", "MATERIAIS", "SERVICOS", "TRANSPORTE"]
 code_column = 1
 description_column = 2
@@ -23,6 +23,9 @@ unit_column = 3
 coefficient_column = 4             # a coluna do coeficiente
 service_code_re = '^C'             # insumo que casa vira sub-composição
 max_depth = 3                      # níveis de aninhamento resolvidos
+expand_subservices = true          # false = o sub-serviço com composição própria
+                                   # vira coluna com o coeficiente de 1º nível,
+                                   # em vez de ser aberto nos insumos dele
 min_tables_to_autodetect = 5
 
 [targets]
@@ -43,3 +46,18 @@ log_sheet_name = "LOG AUTO"
 # substitution_force = { PAREDES = { 12 = "C3615" } }   # força a substituição
 # substitution_block = { PAREDES = ["C3614"] }          # proíbe substituir
 # quantity_override  = { REVESTIMENTOS = { 10 = "orcamento" } }
+
+# ---------------------------------------------------------------------------
+# Fase 2 — síntese de aba a partir do molde
+# ---------------------------------------------------------------------------
+# [targets]
+# template_sheet = "MODELO BASE"   # aba-molde clonada quando o tópico não tem aba
+# generate_missing = true          # false = só o modo de preenchimento
+# insumos_lookup_range = "insumos!$A$6:$D$8635"   # faixa do VLOOKUP de unidade
+#
+# [compositions]
+# column_sections = ["MATERIAIS"]  # vazio = todas as seções viram coluna.
+#                                  # No orçamento real, mão de obra e equipamento
+#                                  # são 34% das 443 colunas geradas.
+# bag_rounding_inputs = ["I0805"]  # insumos cotados em KG e comprados em saco
+# bag_size = 50.0

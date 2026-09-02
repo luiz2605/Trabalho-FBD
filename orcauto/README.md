@@ -117,24 +117,23 @@ src/orcauto/
   resolver.py       coeficiente de um insumo, inclusive aninhado
   layout.py         detecção automática do layout da aba de destino
   planner.py        decisão de ATUALIZADA / SUBSTITUI / NOVA
+  synth.py          síntese de aba nova a partir do molde
   ooxml.py          cirurgia no pacote .xlsx
   report.py         relatório de terminal e aba LOG
   pipeline.py       orquestração
   cli.py            run / inspect / check
+
+webapp/
+  service.py        processar_orcamento() — sem HTTP, sem CLI
+  jobs.py           fila em memória, execução em thread, expiração
+  app.py            rotas FastAPI
+  templates/        página única
 ```
-
-## Auditoria
-
-O `AUDITORIA.md` registra a auditoria de 17/08/2026 sobre a saída real: os dois
-erros confirmados e corrigidos (perda de formatação por regex guloso em
-`ooxml.py`, e unidade vazia em linha `ATUALIZADA`), as hipóteses testadas e
-refutadas, o diagnóstico estrutural da planilha original e a recomendação sobre
-criar colunas novas para insumos sem rastreamento.
 
 ## Testes
 
 ```bash
-pytest              # 75 testes, ~1s
+pytest              # 146 testes, ~5s
 ```
 
 A suíte é autossuficiente: monta uma pasta Excel e um orçamento sintéticos do
@@ -155,3 +154,24 @@ real (65 mil linhas, ~4.300 composições) o recálculo headless não termina ne
 em 25 minutos. A conferência estrutural — `orcauto check` mais a suíte de
 testes — cobre integridade do pacote e preservação das abas originais, mas não
 substitui abrir o arquivo no Excel uma vez.
+
+## Documentos de apoio
+
+| Arquivo | O que traz |
+|---|---|
+| `AUDITORIA.md` | auditoria de 17/08: erros apontados pelo Luiz, com evidência |
+| `RELATORIO-ERROS-VISUAIS.md` | bordas perdidas, `#######` e conferência de coeficientes |
+| `CORRECOES-V3.md` | bugs A/B/C/D do relatório v3: causa raiz, prova antes/depois e testes |
+
+### Opções que mudam o resultado do levantamento
+
+`compositions.expand_subservices` decide o que acontece quando uma composição
+consome outro serviço que tem composição própria (a alvenaria que consome
+argamassa, a forma que consome fabricação + aplicação):
+
+* `true` (padrão) — o sub-serviço é aberto e só o insumo-folha vira coluna;
+* `false` — o sub-serviço vira uma coluna com o coeficiente de primeiro nível.
+
+As configurações reais do escritório usam `false`: é como a planilha feita à
+mão trabalha (a aba `INFRAESTRUTURA` original tem uma coluna rotulada `C3129`)
+e é o que evita a dupla contagem da mão de obra. Ver `CORRECOES-V3.md`, bug B.
